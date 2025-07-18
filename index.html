@@ -71,13 +71,13 @@
                     onInit: function() {
                         console.log('Summernote initialized successfully');
                         // Use an interval to check if Summernote is fully initialized
-                        var checkReady = setInterval(function() {
-                            if ($('#summernote').summernote('isReady')) {
-                                $('#summernote').summernote('fullScreen.toggle');
-                                $('.note-view [data-name="fullscreen"]').hide();
-                                clearInterval(checkReady); // Stop checking once fullscreen is set
-                            }
-                        }, 100);
+                        // var checkReady = setInterval(function() {
+                        //     if ($('#summernote').summernote('isReady')) {
+                        //         $('#summernote').summernote('fullScreen.toggle');
+                        //         $('.note-view [data-name="fullscreen"]').hide();
+                        //         clearInterval(checkReady); // Stop checking once fullscreen is set
+                        //     }
+                        // }, 100);
                     }
                 }
             });
