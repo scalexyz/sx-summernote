@@ -2,37 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Summernote with Undo/Redo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Summernote Fullscreen</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.css" rel="stylesheet">
   <style>
     html, body {
-      height: 100%;
+      height: 100vh; /* Use viewport height */
+      width: 100vw; /* Use viewport width */
       margin: 0;
       padding: 0;
+      overflow: hidden; /* Prevent scrollbars */
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
     }
-    .container {
-      height: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: column;
+    #summernote {
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      display: block;
+      position: fixed; /* Ensure it stays in place */
+      top: 0;
+      left: 0;
     }
     .note-editor {
-      border-radius: 6px;
-      flex: 1; /* Make Summernote take remaining space */
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
+    }
+    .note-frame {
+      height: 100vh !important;
+      width: 100vw !important;
     }
     .note-toolbar {
+      width: 100vw;
       background-color: #f8f9fa;
       border-bottom: 1px solid #e0e0e0;
-      border-radius: 6px 6px 0 0;
+      border-radius: 0;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0 10px; /* Minimal padding for toolbar buttons */
+    }
+    .note-editable {
+      height: calc(100vh - 44px) !important; /* Adjust for toolbar height */
+      width: 100vw !important;
+      margin: 0 !important;
+      padding: 10px !important; /* Minimal padding for usability */
+      box-sizing: border-box;
+      overflow-y: auto; /* Allow scrolling within content */
+      background-color: #fff; /* Ensure consistent background */
     }
     .note-btn {
       border-radius: 4px;
@@ -42,18 +68,16 @@
       background-color: #e9ecef;
     }
     .note-view [data-name="fullscreen"] {
-      display: none !important;
+      display: none !important; /* Hide fullscreen button */
     }
-    /* Ensure Summernote's editable area takes full height */
-    .note-editable {
-      height: 100% !important;
+    /* Override any Bootstrap or Summernote resets */
+    * {
+      box-sizing: border-box !important;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="summernote"><p>Hello Summernote</p></div>
-  </div>
+  <div id="summernote"><p>Hello Summernote</p></div>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.js"></script>
@@ -62,7 +86,6 @@
       try {
         $('#summernote').summernote({
           placeholder: 'Write your content here...',
-          // Remove fixed height to allow dynamic resizing
           toolbar: [
             ['style', ['style']],
             ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
@@ -82,9 +105,34 @@
             onInit: function() {
               console.log('Summernote initialized successfully');
               $('.note-view [data-name="fullscreen"]').hide();
+              // Force resize immediately after initialization
+              updateEditorSize();
             }
           }
         });
+
+        // Function to update editor size
+        function updateEditorSize() {
+          const toolbarHeight = $('.note-toolbar').outerHeight() || 44; // Fallback to 44px if not calculated
+          $('.note-editor').css({
+            height: window.innerHeight + 'px',
+            width: window.innerWidth + 'px'
+          });
+          $('.note-frame').css({
+            height: window.innerHeight + 'px',
+            width: window.innerWidth + 'px'
+          });
+          $('.note-editable').css({
+            height: (window.innerHeight - toolbarHeight) + 'px',
+            width: window.innerWidth + 'px'
+          });
+        }
+
+        // Update size on window resize
+        $(window).resize(updateEditorSize);
+
+        // Initial size update
+        updateEditorSize();
       } catch (err) {
         console.error('Summernote initialization error:', err);
       }
